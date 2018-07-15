@@ -7,7 +7,6 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
@@ -51,23 +50,31 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     private void initView() {
-//        surfaceView = findViewById(R.id.surface);
-        mTextureView = findViewById(R.id.text_ture);
+        surfaceView = findViewById(R.id.surface);
+//        mTextureView = findViewById(R.id.text_ture);
         btnLeft = findViewById(R.id.btn_left);
         btnRight = findViewById(R.id.btn_right);
         btnLeft.setOnClickListener(this);
         btnRight.setOnClickListener(this);
-//        surfaceHolder = surfaceView.getHolder();
-//        surfaceHolder.addCallback(this);
-        mTextureView.setSurfaceTextureListener(this);
+        surfaceHolder = surfaceView.getHolder();
+        surfaceHolder.addCallback(this);
+//        mTextureView.setSurfaceTextureListener(this);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
+        getVideoUrls();
+        initFirstPlayer();
     }
 
     private void getVideoUrls() {
+//        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+//            String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+//            videoList.add(absolutePath + File.separator + "video" + File.separator + "1.mp4");
+//            videoList.add(absolutePath + File.separator + "video" + File.separator + "2.mp4");
+//            videoList.add(absolutePath + File.separator + "video" + File.separator + "3.mp4");
+//            videoList.add(absolutePath + File.separator + "video" + File.separator + "4.mp4");
+//        }
         videoList.add("http://jzvd.nathen.cn/342a5f7ef6124a4a8faf00e738b8bee4/cf6d9db0bd4d41f59d09ea0a81e918fd-5287d2089db37e62345123a1be272f8b.mp4");
         videoList.add("http://jzvd.nathen.cn/c6e3dc12a1154626b3476d9bf3bd7266/6b56c5f0dc31428083757a45764763b0-5287d2089db37e62345123a1be272f8b.mp4");
         videoList.add("http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-17_17-33-30.mp4");
@@ -80,8 +87,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         firstPlayer = new MediaPlayer();
         firstPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         // 视频显示在surfaceView上
-//        firstPlayer.setDisplay(surfaceHolder);
-        firstPlayer.setSurface(new Surface(mSurfaceTexture));
+        firstPlayer.setDisplay(surfaceHolder);
+//        firstPlayer.setSurface(new Surface(mSurfaceTexture));
         firstPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -102,12 +109,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
      * 当前视频播放完成
      */
     private void onVideoComplete(MediaPlayer player) {
-//        player.setDisplay(null);
-        player.setSurface(null);
+        player.setDisplay(null);
+//        player.setSurface(null);
         currentPlayer = playerCache.get(String.valueOf(++currentIndex));
         if (currentPlayer != null) {
-//            currentPlayer.setDisplay(surfaceHolder);
-            currentPlayer.setSurface(new Surface(mSurfaceTexture));
+            currentPlayer.setDisplay(surfaceHolder);
+//            currentPlayer.setSurface(new Surface(mSurfaceTexture));
         } else {
             Toast.makeText(this, "视频播放完成", Toast.LENGTH_SHORT).show();
         }
@@ -221,15 +228,28 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private void onVideoChanged(MediaPlayer player) {
         changePlayer = playerCache.get(String.valueOf(currentIndex));
         if (changePlayer != null) {
-//            player.setDisplay(null);
-            player.setSurface(null);
+            player.setDisplay(null);
+//            player.setSurface(null);
             player.pause();
-//            changePlayer.setDisplay(surfaceHolder);
-            changePlayer.setSurface(new Surface(mSurfaceTexture));
+            changePlayer.setDisplay(surfaceHolder);
+//            changePlayer.setSurface(new Surface(mSurfaceTexture));
             changePlayer.start();
             changePlayer.pause();
             changePlayer.seekTo(0);
             currentPlayer = changePlayer;
+//            currentPlayer.reset();
+//            try {
+//                currentPlayer.setDataSource(videoList.get(currentIndex));
+//                currentPlayer.prepare();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            currentPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                @Override
+//                public void onCompletion(MediaPlayer mp) {
+//                    onVideoComplete(mp);
+//                }
+//            });
             currentPlayer.start();
         }
     }
